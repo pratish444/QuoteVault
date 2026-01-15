@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors -->
+    <color name="primary_light">#6366F1</color>
+    <color name="primary_dark">#818CF8</color>
+
+    <!-- Secondary Colors -->
+    <color name="secondary_light">#9333EA</color>
+    <color name="secondary_dark">#A855F7</color>
+
+    <!-- Background Colors -->
+    <color name="background_light">#FAFAFA</color>
+    <color name="background_dark">#0F0F1A</color>
+
+    <!-- Surface Colors -->
+    <color name="surface_light">#FFFFFF</color>
+    <color name="surface_dark">#1A1A2E</color>
+
+    <!-- Text Colors -->
+    <color name="on_surface_light">#1C1B1F</color>
+    <color name="on_surface_dark">#E6E6E9</color>
+
+    <!-- Accent Colors for Collections -->
+    <color name="accent_indigo">#6366F1</color>
+    <color name="accent_purple">#9333EA</color>
+    <color name="accent_pink">#EC4899</color>
+    <color name="accent_orange">#F97316</color>
+    <color name="accent_green">#10B981</color>
+    <color name="accent_blue">#3B82F6</color>
+    <color name="accent_teal">#14B8A6</color>
+    <color name="accent_red">#EF4444</color>
+
+    <!-- System Colors -->
+    <color name="error">#B3261E</color>
+    <color name="success">#10B981</color>
+    <color name="warning">#F59E0B</color>
+
+    <!-- Splash Screen -->
+    <color name="splash_background">#6366F1</color>
+
+    <!-- Widget Colors -->
+    <color name="widget_background_light">#FFFFFF</color>
+    <color name="widget_background_dark">#1A1A2E</color>
+    <color name="widget_text_light">#1C1B1F</color>
+    <color name="widget_text_dark">#E6E6E9</color>
+
+    <!-- Transparent -->
+    <color name="transparent">#00000000</color>
+
+    <!-- Black and White -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+</resources>

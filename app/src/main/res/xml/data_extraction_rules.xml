@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Include user preferences for cloud backup -->
+        <include domain="sharedpref" path="."/>
+
+        <!-- Include database for cloud backup -->
+        <include domain="database" path="."/>
+
+        <!-- Exclude cache from cloud backup -->
+        <exclude domain="cache" path="."/>
+    </cloud-backup>
+
+    <device-transfer>
+        <!-- Include everything for device transfer -->
+        <include domain="sharedpref" path="."/>
+        <include domain="database" path="."/>
+        <include domain="file" path="."/>
+    </device-transfer>
+</data-extraction-rules>
