@@ -9,8 +9,8 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.yourcompany.quotevault.MainActivity
-import com.yourcompany.quotevault.QuoteVaultApplication
 import com.yourcompany.quotevault.R
+import com.yourcompany.quotevault.QuoteVaultApplication
 import com.yourcompany.quotevault.data.repository.QuoteRepository
 import com.yourcompany.quotevault.utils.Result
 import com.yourcompany.quotevault.widget.WidgetUpdater
