@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.yourcompany.quotevault.domain.model.Quote
+import com.yourcompany.quotevault.ui.components.AddToCollectionDialog
 import com.yourcompany.quotevault.ui.components.CardStyleSelectionDialog
 import com.yourcompany.quotevault.ui.components.EmptyState
 import com.yourcompany.quotevault.ui.components.QuoteCard
@@ -49,6 +50,11 @@ fun FavoritesScreen() {
     var showShareDialog by remember { mutableStateOf(false) }
     var showStyleDialog by remember { mutableStateOf(false) }
     var shareMode by remember { mutableStateOf<ShareMode?>(null) }
+    var showAddToCollectionDialog by remember { mutableStateOf<Quote?>(null) }
+
+    // Get collections for the dialog
+    val collectionsViewModel: com.yourcompany.quotevault.ui.screens.collections.CollectionsViewModel = hiltViewModel()
+    val collections by collectionsViewModel.collections.collectAsStateWithLifecycle()
 
     // Show snackbar when message changes
     LaunchedEffect(message) {
@@ -104,7 +110,7 @@ fun FavoritesScreen() {
                                 selectedQuote = quote
                                 showShareDialog = true
                             },
-                            onAddToCollectionClick = { }
+                            onAddToCollectionClick = { showAddToCollectionDialog = quote }
                         )
                     }
                 }
@@ -163,6 +169,22 @@ fun FavoritesScreen() {
                 selectedQuote = null
             },
             shareManager = shareManager
+        )
+    }
+
+    // Add to collection dialog
+    showAddToCollectionDialog?.let { quote ->
+        com.yourcompany.quotevault.ui.components.AddToCollectionDialog(
+            collections = collections,
+            onDismiss = { showAddToCollectionDialog = null },
+            onCreateCollection = {
+                showAddToCollectionDialog = null
+                // Navigate to create collection screen (would need navigation)
+            },
+            onAddToCollection = { collectionId ->
+                collectionsViewModel.addQuoteToCollection(collectionId, quote.id)
+                showAddToCollectionDialog = null
+            }
         )
     }
 }
