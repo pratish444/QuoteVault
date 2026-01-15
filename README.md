@@ -216,7 +216,7 @@ QuoteVault follows **Clean Architecture** principles with a clear separation of 
 - **Color Palette:** Custom accent colors with full Dark / Light theme support
 - **Typography:** DM Sans, Lora, and Merriweather font families
 
-- **Design Files:** [View on Stitch](https://stitch.withgoogle.com/projects/6479263854545674579?pli=1)
+- **Design Files:** [View on Stitch](https://stitch.withgoogle.com/projects/6479263854545674579)
 
 ## Project Structure
 
