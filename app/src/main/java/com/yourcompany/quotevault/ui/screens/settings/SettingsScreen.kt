@@ -354,43 +354,67 @@ fun NotificationTimeDialog(
     onTimeSelected: (Int, Int) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var hour by remember { mutableStateOf(currentHour) }
-    var minute by remember { mutableStateOf(currentMinute) }
-
     TimePickerDialog(
-        onConfirm = { onTimeSelected(hour, minute) },
+        initialHour = currentHour,
+        initialMinute = currentMinute,
+        onConfirm = onTimeSelected,
         onDismiss = onDismiss
-    ) {
-        // Use the time picker state if you want to show a time picker
-        // For simplicity, we're using a basic implementation here
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimePickerDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-    content: @Composable () -> Unit
+    initialHour: Int,
+    initialMinute: Int,
+    onConfirm: (Int, Int) -> Unit,
+    onDismiss: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Set Notification Time") },
-        text = {
-            // TODO: Implement proper TimePicker when available
-            // For now, use simple controls
-            Text("Time picker will be available in future update")
-            content()
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text("OK")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
+    val timePickerState = rememberTimePickerState(
+        initialHour = initialHour,
+        initialMinute = initialMinute,
+        is24Hour = false
     )
+
+    var showConfirmDialog by remember { mutableStateOf(false) }
+
+    if (showConfirmDialog) {
+        val selectedTime = "${timePickerState.hour}:${String.format("%02d", timePickerState.minute)}"
+        AlertDialog(
+            onDismissRequest = { showConfirmDialog = false },
+            title = { Text("Confirm Time") },
+            text = { Text("Set daily quote notification at $selectedTime?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    onConfirm(timePickerState.hour, timePickerState.minute)
+                    showConfirmDialog = false
+                }) {
+                    Text("Confirm")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showConfirmDialog = false }) {
+                    Text("Edit")
+                }
+            }
+        )
+    } else {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text("Set Notification Time") },
+            text = {
+                TimePicker(state = timePickerState)
+            },
+            confirmButton = {
+                TextButton(onClick = { showConfirmDialog = true }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 }

@@ -6,13 +6,15 @@ import androidx.lifecycle.viewModelScope
 import com.yourcompany.quotevault.data.preferences.UserPreferencesRepository
 import com.yourcompany.quotevault.domain.model.AppTheme
 import com.yourcompany.quotevault.domain.model.FontSize
+import com.yourcompany.quotevault.workers.WorkScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val preferencesRepository: UserPreferencesRepository
+    private val preferencesRepository: UserPreferencesRepository,
+    private val workScheduler: WorkScheduler
 ) : ViewModel() {
 
     val userPreferences = preferencesRepository.userPreferencesFlow
@@ -44,6 +46,13 @@ class SettingsViewModel @Inject constructor(
     fun updateNotifications(enabled: Boolean, hour: Int, minute: Int) {
         viewModelScope.launch {
             preferencesRepository.updateNotifications(enabled, hour, minute)
+
+            // Reschedule the work based on new preferences
+            if (enabled) {
+                workScheduler.schedulePeriodicDailyQuote(hour, minute)
+            } else {
+                workScheduler.cancelDailyQuote()
+            }
         }
     }
 }
