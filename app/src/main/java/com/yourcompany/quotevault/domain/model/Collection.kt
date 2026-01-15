@@ -1,5 +1,6 @@
 package com.yourcompany.quotevault.domain.model
 
+
 data class Collection(
     val id: String,
     val userId: String,
