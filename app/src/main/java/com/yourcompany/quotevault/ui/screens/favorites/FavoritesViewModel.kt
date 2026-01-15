@@ -17,8 +17,12 @@ class FavoritesViewModel @Inject constructor(
     private val preferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
-    private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Synced())
+    private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Synced)
     val syncStatus: StateFlow<SyncStatus> = _syncStatus.asStateFlow()
+
+    private fun setSyncStatus(status: SyncStatus) {
+        _syncStatus.value = status
+    }
 
     val favorites: StateFlow<List<Quote>> = preferencesRepository.userIdFlow
         .filterNotNull()
@@ -28,7 +32,7 @@ class FavoritesViewModel @Inject constructor(
         }
         .onEach {
             // Update sync status when favorites are loaded
-            _syncStatus.value = SyncStatus.Synced()
+            setSyncStatus(SyncStatus.Synced)
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
@@ -40,18 +44,18 @@ class FavoritesViewModel @Inject constructor(
 
     fun removeFavorite(quoteId: String) {
         viewModelScope.launch {
-            _syncStatus.value = SyncStatus.Syncing
+            setSyncStatus(SyncStatus.Syncing)
             val userId = preferencesRepository.userIdFlow.firstOrNull() ?: return@launch
             when (val result = favoriteRepository.removeFavorite(userId, quoteId)) {
                 is com.yourcompany.quotevault.utils.Result.Success -> {
                     timber.log.Timber.d("Removed quote from favorites")
                     _message.value = "Removed from favorites"
-                    _syncStatus.value = SyncStatus.Synced()
+                    setSyncStatus(SyncStatus.Synced)
                 }
                 is com.yourcompany.quotevault.utils.Result.Error -> {
                     timber.log.Timber.e(result.exception, "Failed to remove quote from favorites")
                     _message.value = "Failed to remove from favorites"
-                    _syncStatus.value = SyncStatus.Error
+                    setSyncStatus(SyncStatus.Error)
                 }
                 else -> {}
             }
@@ -60,18 +64,18 @@ class FavoritesViewModel @Inject constructor(
 
     fun addFavorite(quoteId: String) {
         viewModelScope.launch {
-            _syncStatus.value = SyncStatus.Syncing
+            setSyncStatus(SyncStatus.Syncing)
             val userId = preferencesRepository.userIdFlow.firstOrNull() ?: return@launch
             when (val result = favoriteRepository.addFavorite(userId, quoteId)) {
                 is com.yourcompany.quotevault.utils.Result.Success -> {
                     timber.log.Timber.d("Added quote to favorites")
                     _message.value = "Added to favorites"
-                    _syncStatus.value = SyncStatus.Synced()
+                    setSyncStatus(SyncStatus.Synced)
                 }
                 is com.yourcompany.quotevault.utils.Result.Error -> {
                     timber.log.Timber.e(result.exception, "Failed to add quote to favorites")
                     _message.value = "Failed to add to favorites"
-                    _syncStatus.value = SyncStatus.Error
+                    setSyncStatus(SyncStatus.Error)
                 }
                 else -> {}
             }
@@ -85,11 +89,11 @@ class FavoritesViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _isRefreshing.value = true
-            _syncStatus.value = SyncStatus.Syncing
+            setSyncStatus(SyncStatus.Syncing)
             // Favorites are already reactive, just simulate refresh for UI feedback
             kotlinx.coroutines.delay(500)
             _isRefreshing.value = false
-            _syncStatus.value = SyncStatus.Synced()
+            setSyncStatus(SyncStatus.Synced)
         }
     }
 }
