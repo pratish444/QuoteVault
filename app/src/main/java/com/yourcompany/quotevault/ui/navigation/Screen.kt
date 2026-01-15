@@ -16,6 +16,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector?
     object Favorites : Screen("favorites", "Favorites", Icons.Default.Favorite)
     object Collections : Screen("collections", "Collections", Icons.Default.FolderOpen)
     object Profile : Screen("profile", "Profile", Icons.Default.Person)
+    object EditProfile : Screen("edit_profile", "Edit Profile")
     object Settings : Screen("settings", "Settings")
 
     object CollectionDetail : Screen("collection/{collectionId}", "Collection") {
