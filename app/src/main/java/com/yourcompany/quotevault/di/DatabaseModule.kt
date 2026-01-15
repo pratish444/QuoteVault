@@ -1,11 +1,13 @@
 package com.yourcompany.quotevault.di
 
+
 import android.content.Context
 import androidx.room.Room
 import com.yourcompany.quotevault.data.local.QuoteVaultDatabase
 import com.yourcompany.quotevault.data.local.dao.CollectionDao
 import com.yourcompany.quotevault.data.local.dao.FavoriteDao
 import com.yourcompany.quotevault.data.local.dao.QuoteDao
+import com.yourcompany.quotevault.data.local.dao.QuoteCacheDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,5 +46,10 @@ object DatabaseModule {
     @Provides
     fun provideCollectionDao(database: QuoteVaultDatabase): CollectionDao {
         return database.collectionDao()
+    }
+
+    @Provides
+    fun provideQuoteCacheDao(database: QuoteVaultDatabase): QuoteCacheDao {
+        return database.quoteCacheDao()
     }
 }
