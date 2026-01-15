@@ -11,6 +11,10 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+enum class SearchType {
+    ALL, KEYWORD, AUTHOR
+}
+
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -20,15 +24,30 @@ class SearchViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
-    val searchResults = _searchQuery
+    private val _searchType = MutableStateFlow(SearchType.ALL)
+    val searchType = _searchType.asStateFlow()
+
+    val searchResults = combine(_searchQuery, _searchType) { query, type ->
+        query to type
+    }
         .debounce(300)
-        .filter { it.isNotBlank() }
-        .flatMapLatest { query ->
-            quoteRepository.searchQuotes(query)
+        .filter { it.first.isNotBlank() }
+        .flatMapLatest { (query, type) ->
+            when (type) {
+                SearchType.ALL -> quoteRepository.searchQuotes(query)
+                SearchType.KEYWORD -> quoteRepository.searchQuotes(query).map { quotes ->
+                    quotes.filter { quote -> quote.text.contains(query, ignoreCase = true) }
+                }
+                SearchType.AUTHOR -> quoteRepository.searchByAuthor(query)
+            }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
+    }
+
+    fun setSearchType(type: SearchType) {
+        _searchType.value = type
     }
 }
