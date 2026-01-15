@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Cache directory for temporary image files -->
+    <cache-path name="cache" path="/" />
+    <!-- External cache directory for sharing images -->
+    <external-cache-path name="external_cache" path="/" />
+    <!-- Files directory for persistent storage -->
+    <files-path name="files" path="/" />
+    <!-- External files directory for saved images -->
+    <external-files-path name="external_files" path="Pictures" />
+    <!-- External storage root for older Android versions -->
+    <external-path name="external" path="/" />
+</paths>
