@@ -1,5 +1,5 @@
-package com.yourcompany.quotevault
 
+package com.yourcompany.quotevault
 
 import android.app.Application
 import android.app.NotificationChannel
@@ -10,8 +10,6 @@ import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import javax.inject.Inject
-import com.yourcompany.quotevault.BuildConfig
-
 
 @HiltAndroidApp
 class QuoteVaultApplication : Application(), Configuration.Provider {
