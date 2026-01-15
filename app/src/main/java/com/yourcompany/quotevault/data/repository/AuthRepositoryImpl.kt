@@ -272,7 +272,7 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val result = preferencesRepository.syncFromRemote()
             when (result) {
-                is com.yourcompany.quotevault.utils.Result.Success -> {
+                is com.yourcompany.quotevault.utils.Result.Success<com.yourcompany.quotevault.domain.model.UserPreferences> -> {
                     Timber.d("Successfully synced user preferences from remote")
                     result
                 }
@@ -295,7 +295,7 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val result = preferencesRepository.syncToRemote()
             when (result) {
-                is com.yourcompany.quotevault.utils.Result.Success -> {
+                is com.yourcompany.quotevault.utils.Result.Success<Unit> -> {
                     Timber.d("Successfully uploaded user preferences to remote")
                     result
                 }
@@ -311,6 +311,67 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Timber.e(e, "Error uploading user preferences")
             com.yourcompany.quotevault.utils.Result.Error(e)
+        }
+    }
+
+    override suspend fun updateProfile(displayName: String?, avatarUrl: String?): Result<User> {
+        return try {
+            val currentUser = supabase.auth.currentUserOrNull()
+                ?: return Result.Error(Exception("User not logged in"))
+
+            // Update display name in Supabase auth metadata
+            if (displayName != null) {
+                try {
+                    supabase.auth.updateUser {
+                        this.data = buildJsonObject {
+                            put("display_name", JsonPrimitive(displayName))
+                        }
+                    }
+                    Timber.d("Updated display name to: $displayName")
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to update display name in auth")
+                }
+            }
+
+            // Update user profiles table
+            try {
+                val updateData = mutableMapOf<String, Any>()
+                displayName?.let { updateData["display_name"] = it }
+                avatarUrl?.let { updateData["avatar_url"] = it }
+
+                if (updateData.isNotEmpty()) {
+                    supabase.from("user_profiles").update(updateData) {
+                        filter {
+                            eq("id", currentUser.id)
+                        }
+                    }
+                    Timber.d("Updated user_profiles table")
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to update user_profiles table")
+                // Continue anyway, as auth metadata was updated
+            }
+
+            // Emit updated user
+            emitCurrentUserFromSession()
+
+            // Get the updated user
+            val updatedUser = supabase.auth.currentUserOrNull()
+            if (updatedUser != null) {
+                Result.Success(
+                    User(
+                        id = updatedUser.id,
+                        email = updatedUser.email ?: currentUser.email ?: "",
+                        displayName = displayName ?: (updatedUser.userMetadata?.get("display_name") as? String),
+                        avatarUrl = avatarUrl?: (currentUser.userMetadata?.get("avatar_url") as? String)
+                    )
+                )
+            } else {
+                Result.Error(Exception("Failed to retrieve updated user"))
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error updating profile")
+            Result.Error(e)
         }
     }
 }

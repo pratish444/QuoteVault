@@ -15,4 +15,5 @@ interface AuthRepository {
     suspend fun getCurrentUser(): User?
     suspend fun syncUserPreferences(): Result<UserPreferences>
     suspend fun uploadUserPreferences(): Result<Unit>
+    suspend fun updateProfile(displayName: String? = null, avatarUrl: String? = null): Result<User>
 }
